@@ -9,20 +9,22 @@ import java.io.IOException;
 
 public class TrackOperations {
 
-    MediaPlayer player = null;
+    MediaPlayer player;
 
-    public void playMusic(Context context, Uri uri) throws RemoteException {
-        try {
+    public TrackOperations() {
+        player = new MediaPlayer();
+    }
 
-            if (player == null)
-                player = new MediaPlayer();
+    public void setSource(Context context, Uri uri) throws IOException {
+        player.setDataSource(context, uri);
+        player.prepare();
+    }
 
-            player.reset(); // optional if you want to repeat calling this method
-            player.setDataSource(context, uri);
-            player.prepare();
+    public void toggleMusic() throws RemoteException {
+        if (player.isPlaying()) {
+            player.pause();
+        } else {
             player.start();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

@@ -14,12 +14,13 @@
         android:layout_weight="1" />
 
     <!--this is for the play bar at the bottom, this remains at the bottom at all times-->
-    <include
+
+    <fragment
         android:id="@+id/controls"
-        class="rs.example.audioplayer.Controls"
-        layout="@layout/controls_layout"
+        android:name="rs.example.audioplayer.ControlsFragment"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="0.25" />
+
 
 </LinearLayout>
