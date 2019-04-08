@@ -1,5 +1,6 @@
 package rs.example.audioplayer;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+    Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            context = this;
+
             // Create an instance of the first fragment
             PlaylistBrowser pb = new PlaylistBrowser();
 
@@ -43,5 +47,9 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, pb).commit();
         }
+    }
+
+    public Context getContext(){
+        return context;
     }
 }
