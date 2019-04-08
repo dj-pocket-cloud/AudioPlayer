@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Create an instance of the first fragment
             PlaylistBrowser pb = new PlaylistBrowser();
+            //HomeFragment hf = new HomeFragment();
 
             // In case this activity was started with special instructions from an Intent,
             // pass the Intent's extras to the fragment as arguments
