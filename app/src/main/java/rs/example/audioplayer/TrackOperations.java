@@ -16,7 +16,6 @@ public class TrackOperations {
     }
 
     public void setSource(Context context, Uri uri) throws IOException {
-        player.stop();
         player.setDataSource(context, uri);
         player.prepare();
     }
@@ -27,20 +26,22 @@ public class TrackOperations {
         else { player.start(); }
     }
 
-    public void seekBack() {
+    public boolean getPlaying() {
+        return player.isPlaying();
+    }
+
+    public void setPosition(int msec) {
         //get the current status of the player and store it in a local boolean
         boolean wasPlaying = player.isPlaying();
 
         //stop the music, and if it was playing then start playing again
-        player.pause();
-        player.seekTo(0);
+        if (wasPlaying) { player.pause(); }
+        player.seekTo(msec);
         if (wasPlaying) { player.start(); }
     }
 
-    public void playFromPoint(int msec) {
-        player.pause();
-        player.seekTo(msec);
-        player.start();
+    public int getPosition() {
+        return player.getCurrentPosition(); //returns in milliseconds
     }
 
     //set looping status
@@ -48,7 +49,11 @@ public class TrackOperations {
         player.setLooping(loop);
     }
 
-    public int getPosition() {
-        return player.getCurrentPosition(); //returns in milliseconds
+    public boolean getLooping() {
+        return player.isLooping();
+    }
+
+    public int getLength() {
+        return player.getDuration();
     }
 }
