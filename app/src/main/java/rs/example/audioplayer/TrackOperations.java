@@ -56,4 +56,38 @@ public class TrackOperations {
     public int getLength() {
         return player.getDuration();
     }
+
+    public String getLengthAsString(boolean getRemainingLength, int msProgress) {
+        String result = null;
+        int ms = msProgress;
+        //if first flag is set true, set ms to remaining length instead of current length
+        if (getRemainingLength) {
+            ms = player.getDuration() - msProgress;
+        }
+        int min = ms/60000; //get amount of minutes first
+        ms = ms - (min*60000); //subtract those minutes from ms
+        int sec = ms/1000; //get amount of seconds from result of above operation
+
+        //build the strings
+        String minString;
+        String secString;
+        if(min < 10) {
+            minString = "0" + min;  //result: 0N
+        } else if (min >= 10 && min < 99) {
+            minString = "" + min;   //result: NN
+        } else {
+            minString = "99";       //result: 99
+        }
+        if(sec < 10) {
+            secString = "0" + sec;  //result: 0N
+        } else if (sec >= 10 && sec < 99) {
+            secString = "" + sec;   //result: NN
+        } else {
+            secString = "99";       //result: 99
+        }
+
+        result = minString + ":" + secString;
+
+        return result;
+    }
 }

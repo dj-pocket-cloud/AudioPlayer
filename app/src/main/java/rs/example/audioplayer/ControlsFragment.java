@@ -34,10 +34,13 @@ public class ControlsFragment extends Fragment {
     private ImageButton fastForwardButton;
     private SeekBar seekBar;
     private TextView songInfo;
+    private TextView timeAt;
+    private TextView timeLeft;
 
     private int loop = 0;
     private int beginning;
     private int end;
+    private boolean updateTimeMarkers = true;
     Handler handler = new Handler();
 
     @Override
@@ -60,6 +63,9 @@ public class ControlsFragment extends Fragment {
         fastForwardButton = (ImageButton)view.findViewById(R.id.forward);
         seekBar = (SeekBar)view.findViewById(R.id.songSeek);
         songInfo = (TextView)view.findViewById(R.id.songInfo);
+        timeAt = (TextView)view.findViewById(R.id.timeAt);
+        timeLeft = (TextView)view.findViewById(R.id.timeLeft);
+
         playButton.setOnClickListener(playButtonListener);
         rewindButton.setOnClickListener(rewindButtonListener);
         loopButton.setOnClickListener(loopButtonListener);
@@ -71,12 +77,10 @@ public class ControlsFragment extends Fragment {
         beginning = 0;
         end = mediaPlayer.getLength() - 1;
 
+        //all logic that runs in real-time is here
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int mCurrPosition = mediaPlayer.getPosition();
-                seekBar.setProgress(mCurrPosition);
-                handler.postDelayed(this, 1000);
 
                 if (mediaPlayer.getPlaying()) playButton.setImageResource(R.drawable.ic_pause_black_24dp);
                 else playButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
@@ -85,6 +89,15 @@ public class ControlsFragment extends Fragment {
                 else loopButton.setImageAlpha(Color.GRAY);
 
                 songInfo.setText(getResources().getResourceName(R.raw.knux));
+                if (updateTimeMarkers) {
+                    timeAt.setText(mediaPlayer.getLengthAsString(false, seekBar.getProgress()));
+                    timeLeft.setText(mediaPlayer.getLengthAsString(true, seekBar.getProgress()));
+                }
+
+                int mCurrPosition = mediaPlayer.getPosition();
+                seekBar.setProgress(mCurrPosition);
+                handler.postDelayed(this, 10);
+
             }
         });
 
@@ -141,12 +154,12 @@ public class ControlsFragment extends Fragment {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
+            updateTimeMarkers = false;
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
+            updateTimeMarkers = true;
         }
     };
 
