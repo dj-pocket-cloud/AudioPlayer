@@ -11,10 +11,16 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +41,24 @@ public class PlaylistBrowser extends Fragment {
         trackArrayAdapter = new TrackArrayAdapter(getContext(),trackList);
         trackListView.setAdapter(trackArrayAdapter);
 
-        getAllTracks(getContext());
+        //gets track item when clicked
+        trackListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item text from ListView
+                Track selectedItem = (Track) parent.getItemAtPosition(position);
+
+                // Display the selected item text on TextView
+                //tv.setText("Your favorite : " + selectedItem);
+                Toast message = Toast.makeText(getContext(), selectedItem.getTrackName(), Toast.LENGTH_SHORT);
+                message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
+                message.show();
+            }
+        });
+
+        //initialSetup();
+        checkPermissions();
+        //getAllTracks();
         //setTestTracks();
         return view;
 
@@ -48,12 +71,22 @@ public class PlaylistBrowser extends Fragment {
         }
 
     }
-    private void getAllTracks(Context context){
-        checkPermissions();
+    private void initialSetup(){
+        if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            getAllTracks();
+        }
+        else {
+            checkPermissions();
+        }
+
+    }
+
+    private void getAllTracks(){
+        trackList.clear();
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.TITLE, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.AudioColumns.DURATION};
-        Cursor c = context.getContentResolver().query(uri, projection, MediaStore.Audio.Media.DATA + " like ? ", new String[]{"%%"}, null);
+        Cursor c = getContext().getContentResolver().query(uri, projection, MediaStore.Audio.Media.DATA + " like ? ", new String[]{"%%"}, null);
 
         if (c != null) {
             while (c.moveToNext()) {
@@ -77,12 +110,13 @@ public class PlaylistBrowser extends Fragment {
             }
             c.close();
         }
+
     }
 
     private void checkPermissions(){
         if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-            // shows an explanation for why permission is needed
+            /*/ shows an explanation for why permission is needed
             if (shouldShowRequestPermissionRationale(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -102,14 +136,29 @@ public class PlaylistBrowser extends Fragment {
                 );
 
                 // display the dialog
-                builder.create().show();
-            }
-            else {
-                // request permission
-                requestPermissions(
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, FILE_PERMISSION_REQUEST_CODE);
-            }
+                builder.create().show();}*/
+            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE};
+            String rationale = "To use all of this app's features, permission is needed to read and write to this devices memory";
+
+            /*Permissions.Options options = new Permissions.Options()
+                    .setRationaleDialogTitle("Info")
+                    .setSettingsDialogTitle("Warning");*/
+
+            Permissions.check(getContext(), permissions, rationale, null, new PermissionHandler() {
+                @Override
+                public void onGranted() {
+                    //Toast.makeText(getContext(), "Storage granted.", Toast.LENGTH_SHORT).show();
+                    getAllTracks();
+                    trackArrayAdapter.notifyDataSetChanged();
+                    trackListView.smoothScrollToPosition(0);
+                }
+            });
         }
+        /*else {
+            // request permission
+            requestPermissions(
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, FILE_PERMISSION_REQUEST_CODE);
+        }*/
 
     }
 
