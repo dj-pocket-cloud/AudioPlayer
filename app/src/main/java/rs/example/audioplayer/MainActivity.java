@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public Context getContext(){
+    /*public Context getContext(){
         return context;
-    }
+    }*/
 }
