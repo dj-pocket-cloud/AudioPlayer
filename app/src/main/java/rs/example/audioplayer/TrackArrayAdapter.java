@@ -46,9 +46,9 @@ public class TrackArrayAdapter extends ArrayAdapter<Track> {
 
         viewHolder.trackImgView.setImageResource(R.drawable.ic_play_arrow_black_24dp);
 
-        viewHolder.trackTextView.setText(track.trackName);
-        viewHolder.artistTextView.setText(track.artist);
-        viewHolder.lengthTextView.setText(track.trackLength);
+        viewHolder.trackTextView.setText(track.getTrackName());
+        viewHolder.artistTextView.setText(track.getArtist());
+        viewHolder.lengthTextView.setText(track.getTrackLength());
 
         return convertView; // return completed list item to display
     }
