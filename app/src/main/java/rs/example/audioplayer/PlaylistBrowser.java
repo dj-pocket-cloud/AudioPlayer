@@ -18,12 +18,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class PlaylistBrowser extends Fragment {
@@ -31,7 +33,9 @@ public class PlaylistBrowser extends Fragment {
     private ListView trackListView;
     private TrackArrayAdapter trackArrayAdapter;
     private ImageButton backButton;
+    private TextView playlistTitle;
     private static final int FILE_PERMISSION_REQUEST_CODE = 1;
+    private ControlsFragment controlsFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,20 +47,21 @@ public class PlaylistBrowser extends Fragment {
         trackArrayAdapter = new TrackArrayAdapter(getContext(),trackList);
         trackListView.setAdapter(trackArrayAdapter);
 
+        playlistTitle = (TextView) view.findViewById(R.id.playlistTitle);
+
+        controlsFragment = (ControlsFragment) getFragmentManager().findFragmentById(R.id.controls);
+
         backButton = (ImageButton) view.findViewById(R.id.backButton);
 
         //gets track item when clicked
         trackListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the selected item text from ListView
+                // Get the selected item from ListView
+
                 Track selectedItem = (Track) parent.getItemAtPosition(position);
 
-                // Display the selected item text on TextView
-                //tv.setText("Your favorite : " + selectedItem);
-                Toast message = Toast.makeText(getContext(), selectedItem.getTrackName(), Toast.LENGTH_SHORT);
-                message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
-                message.show();
+                controlsFragment.changeMusic(selectedItem);
             }
         });
 
@@ -87,6 +92,8 @@ public class PlaylistBrowser extends Fragment {
 
     }
     private void initialSetup(){
+
+
         if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             getAllTracks();
         }
@@ -124,6 +131,7 @@ public class PlaylistBrowser extends Fragment {
                 trackList.add(audioModel);
             }
             c.close();
+            trackList.sort(Comparator.<Track>naturalOrder());
         }
 
     }

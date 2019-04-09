@@ -16,8 +16,12 @@ public class TrackOperations {
     }
 
     public void setSource(Context context, Uri uri) throws IOException {
+        boolean loop = getLooping();
+        player.reset();
         player.setDataSource(context, uri);
         player.prepare();
+        setLooping(loop);
+        player.start();
     }
 
     public void toggleMusic() throws RemoteException {

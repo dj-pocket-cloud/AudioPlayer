@@ -1,6 +1,6 @@
 package rs.example.audioplayer;
 
-public class Track {
+public class Track implements Comparable<Track>{
     private String trackName;
     private String artist;
     private String trackLength;
@@ -85,5 +85,11 @@ public class Track {
         String result = minString + ":" + secString;
 
         return result;
+    }
+
+
+    @Override
+    public int compareTo(Track compTrack) {
+        return this.artist.compareTo(compTrack.getArtist());
     }
 }

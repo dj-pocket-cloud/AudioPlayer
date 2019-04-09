@@ -26,7 +26,7 @@ import java.io.IOException;
 public class ControlsFragment extends Fragment {
 
     TrackOperations mediaPlayer = new TrackOperations();
-    String uriString = "android.resource://rs.example.audioplayer/" + R.raw.knux;
+    String uriString;// = "android.resource://rs.example.audioplayer/" + R.raw.knux;
 
     private ImageButton playButton;
     private ImageButton rewindButton;
@@ -51,11 +51,11 @@ public class ControlsFragment extends Fragment {
         View view = inflater.inflate(R.layout.controls_fragment,
                 container, false);
 
-        try {
+        /*try {
             mediaPlayer.setSource(this.getContext(), Uri.parse(uriString));
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         playButton = (ImageButton)view.findViewById(R.id.play);
         rewindButton = (ImageButton)view.findViewById(R.id.rewind);
@@ -71,11 +71,11 @@ public class ControlsFragment extends Fragment {
         loopButton.setOnClickListener(loopButtonListener);
         fastForwardButton.setOnClickListener(fastForwardButtonListener);
         seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
-        seekBar.setMax(mediaPlayer.getLength());
-
+        seekBar.setMax(0);//mediaPlayer.getLength());
+        songInfo.setText("No currently playing song.");
         mediaPlayer.setLooping(loop == 1);
         beginning = 0;
-        end = mediaPlayer.getLength() - 1;
+        end = 0;//mediaPlayer.getLength() - 1;
 
         //all logic that runs in real-time is here
         getActivity().runOnUiThread(new Runnable() {
@@ -88,7 +88,6 @@ public class ControlsFragment extends Fragment {
                 if (mediaPlayer.getLooping()) loopButton.setImageAlpha(Color.WHITE);
                 else loopButton.setImageAlpha(Color.GRAY);
 
-                songInfo.setText(getResources().getResourceName(R.raw.knux));
                 if (updateTimeMarkers) {
                     timeAt.setText(mediaPlayer.getLengthAsString(false, seekBar.getProgress()));
                     timeLeft.setText(mediaPlayer.getLengthAsString(true, seekBar.getProgress()));
@@ -150,6 +149,7 @@ public class ControlsFragment extends Fragment {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) { mediaPlayer.setPosition(progress); }
+            if(progress==seekBar.getMax()) { }
         }
 
         @Override
@@ -163,5 +163,17 @@ public class ControlsFragment extends Fragment {
         }
     };
 
+    public void changeMusic(Track track){
+        try {
+            mediaPlayer.setSource(getContext(),Uri.parse(track.getPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.setPosition(0);
+        seekBar.setMax(mediaPlayer.getLength());
+        seekBar.setProgress(0);
+
+        songInfo.setText(track.getTrackName());
+    }
 
 }
