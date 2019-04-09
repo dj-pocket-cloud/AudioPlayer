@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class PlaylistBrowser extends Fragment {
     private List<Track> trackList = new ArrayList<>();
     private ListView trackListView;
     private TrackArrayAdapter trackArrayAdapter;
+    private ImageButton backButton;
     private static final int FILE_PERMISSION_REQUEST_CODE = 1;
 
     @Override
@@ -40,6 +42,8 @@ public class PlaylistBrowser extends Fragment {
         trackListView = (ListView) view.findViewById(R.id.tracksListView);
         trackArrayAdapter = new TrackArrayAdapter(getContext(),trackList);
         trackListView.setAdapter(trackArrayAdapter);
+
+        backButton = (ImageButton) view.findViewById(R.id.backButton);
 
         //gets track item when clicked
         trackListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -53,6 +57,17 @@ public class PlaylistBrowser extends Fragment {
                 Toast message = Toast.makeText(getContext(), selectedItem.getTrackName(), Toast.LENGTH_SHORT);
                 message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
                 message.show();
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    getFragmentManager().popBackStack();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -159,6 +174,14 @@ public class PlaylistBrowser extends Fragment {
             requestPermissions(
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, FILE_PERMISSION_REQUEST_CODE);
         }*/
+        else {
+            //check if both permissions are set and automatically get all tracks
+            if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                getAllTracks();
+                trackArrayAdapter.notifyDataSetChanged();
+                trackListView.smoothScrollToPosition(0);
+            }
+        }
 
     }
 

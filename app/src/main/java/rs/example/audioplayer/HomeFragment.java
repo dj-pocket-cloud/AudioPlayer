@@ -36,11 +36,10 @@ public class HomeFragment extends Fragment {
                     .beginTransaction();
 
             PlaylistBrowser pb = new PlaylistBrowser();
-            fragmentTransaction.replace(R.id.home_menu, pb);
-                //provide the fragment ID of your first fragment which you have given in
-                //fragment_layout_example.xml file in place of first argument
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+            fragmentTransaction.replace(R.id.fragment_container, pb).addToBackStack(null).commit();
+
+            //fragmentTransaction.addToBackStack(null);
+            //fragmentTransaction.commit();
         }
     };
 }

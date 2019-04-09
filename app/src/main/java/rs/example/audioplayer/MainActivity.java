@@ -37,16 +37,16 @@ public class MainActivity extends AppCompatActivity {
             context = this;
 
             // Create an instance of the first fragment
-            PlaylistBrowser pb = new PlaylistBrowser();
-            //HomeFragment hf = new HomeFragment();
+            //PlaylistBrowser pb = new PlaylistBrowser();
+            HomeFragment hf = new HomeFragment();
 
             // In case this activity was started with special instructions from an Intent,
             // pass the Intent's extras to the fragment as arguments
-            pb.setArguments(getIntent().getExtras());
+            hf.setArguments(getIntent().getExtras());
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, pb).commit();
+                    .add(R.id.fragment_container, hf).commit();
         }
     }
 
