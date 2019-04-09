@@ -11,6 +11,7 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,13 @@ import android.widget.ImageButton;
 import android.view.View.OnClickListener;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ControlsFragment extends Fragment {
 
@@ -36,6 +40,10 @@ public class ControlsFragment extends Fragment {
     private TextView songInfo;
     private TextView timeAt;
     private TextView timeLeft;
+    private int trackIndex;
+    private boolean musicListFilled = false;
+
+    private List<Track> trackList = new ArrayList<>();
 
     private int loop = 0;
     private int beginning;
@@ -123,6 +131,9 @@ public class ControlsFragment extends Fragment {
     OnClickListener rewindButtonListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
+            if(musicListFilled&&getSeekBarPercent()<2){
+                changeMusic(trackList.get(decrementTrackIndex()));
+            }
             mediaPlayer.setPosition(beginning);
         }
     };
@@ -131,7 +142,8 @@ public class ControlsFragment extends Fragment {
     OnClickListener fastForwardButtonListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            mediaPlayer.setPosition(end);
+            if(musicListFilled)
+            changeMusic(trackList.get((trackIndex+1)%(trackList.size())));
         }
     };
 
@@ -139,8 +151,18 @@ public class ControlsFragment extends Fragment {
         @Override
         public void onClick(View v) {
             mediaPlayer.setLooping((++loop) % 2 == 1);
-            if (mediaPlayer.getLooping()) loopButton.setImageAlpha(Color.WHITE);
-            else loopButton.setImageAlpha(Color.GRAY);
+            if (mediaPlayer.getLooping()){
+                loopButton.setImageAlpha(Color.WHITE);
+                Toast message = Toast.makeText(getContext(), "Looping On", Toast.LENGTH_SHORT);
+                message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
+                message.show();
+            }
+            else{
+                loopButton.setImageAlpha(Color.GRAY);
+                Toast message = Toast.makeText(getContext(), "Looping Off", Toast.LENGTH_SHORT);
+                message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
+                message.show();
+            }
         }
     };
 
@@ -149,7 +171,9 @@ public class ControlsFragment extends Fragment {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) { mediaPlayer.setPosition(progress); }
-            if(progress==seekBar.getMax()) { }
+            if(musicListFilled&&progress==seekBar.getMax()&&!mediaPlayer.getLooping()) {
+                changeMusic(trackList.get((trackIndex+1)%(trackList.size())));
+            }
         }
 
         @Override
@@ -173,7 +197,35 @@ public class ControlsFragment extends Fragment {
         seekBar.setMax(mediaPlayer.getLength());
         seekBar.setProgress(0);
 
+        trackIndex = trackList.indexOf(track);
+
         songInfo.setText(track.getTrackName());
+
+        Toast message = Toast.makeText(getContext(), "Playing " + track.getTrackName(), Toast.LENGTH_SHORT);
+        message.setGravity(Gravity.CENTER, message.getXOffset() / 2,
+                message.getYOffset() / 2);
+        message.show();
     }
 
+    private int getSeekBarPercent() {
+        int percent;
+        int max = seekBar.getMax();
+        int cur = seekBar.getProgress();
+        double decVal = (double)cur/max;
+        decVal*=100;
+        percent = (int) Math.round(decVal);
+        return percent;
+    }
+
+    private int decrementTrackIndex(){
+        if(trackIndex==0)
+            return trackList.size()-1;
+        else
+            return trackIndex-1;
+    }
+
+    public void setTrackList(List<Track> trackList) {
+        musicListFilled = true;
+        this.trackList = trackList;
+    }
 }

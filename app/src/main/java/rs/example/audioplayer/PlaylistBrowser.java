@@ -105,6 +105,7 @@ public class PlaylistBrowser extends Fragment {
 
     private void getAllTracks(){
         trackList.clear();
+        playlistTitle.setText("All Audio");
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.TITLE, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.AudioColumns.DURATION};
@@ -132,6 +133,7 @@ public class PlaylistBrowser extends Fragment {
             }
             c.close();
             trackList.sort(Comparator.<Track>naturalOrder());
+            controlsFragment.setTrackList(trackList);
         }
 
     }
@@ -191,6 +193,9 @@ public class PlaylistBrowser extends Fragment {
             }
         }
 
+    }
+    public Track getTrackFromList(int index){
+        return trackList.get(index);
     }
 
 }
