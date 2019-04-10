@@ -36,6 +36,8 @@ public class PlaylistBrowser extends Fragment {
     private TextView playlistTitle;
     private static final int FILE_PERMISSION_REQUEST_CODE = 1;
     private ControlsFragment controlsFragment;
+    private Track previousTrack;
+    private int previousPos = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,6 +62,16 @@ public class PlaylistBrowser extends Fragment {
                 // Get the selected item from ListView
 
                 Track selectedItem = (Track) parent.getItemAtPosition(position);
+                //if there was a previous track selected, set its image back to the default
+                /*if (previousPos != -1) {
+                    Log.d("hi", "onItemClick: ");
+                    previousTrack.setImgId(R.drawable.ic_album_black_24dp);
+                    trackArrayAdapter.setImg(previousPos, view);
+                }
+                previousTrack = selectedItem; //after that set previous track to currently selected track
+                previousPos = position;
+                selectedItem.setImgId(R.drawable.ic_play_arrow_black_24dp); //set play icon on current track
+                trackArrayAdapter.setImg(position, view);*/
 
                 controlsFragment.changeMusic(selectedItem);
             }
@@ -86,7 +98,7 @@ public class PlaylistBrowser extends Fragment {
 
     private void setTestTracks(){
         for(int i = 0; i < 10; i++){
-            Track newTrack = new Track("Hello" + i,"nope", "12112","dummy","dummy");
+            Track newTrack = new Track("Hello" + i,"nope", "12112","dummy","dummy", R.drawable.ic_album_black_24dp);
             trackList.add(newTrack);
         }
 
@@ -125,6 +137,7 @@ public class PlaylistBrowser extends Fragment {
                 audioModel.setArtist(artist);
                 audioModel.setPath(path);
                 audioModel.setTrackLength(length);
+                audioModel.setImgId(R.drawable.ic_album_black_24dp);
 
                 Log.e("Name :" + name, " Album :" + album);
                 Log.e("Path :" + path, " Artist :" + artist);

@@ -40,7 +40,7 @@ public class OptionArrayAdapter extends ArrayAdapter<Option> {
             viewHolder = (OptionArrayAdapter.ViewHolder) convertView.getTag();
         }
 
-        viewHolder.optionImgView.setImageResource(R.drawable.ic_settings_black_24dp);
+        viewHolder.optionImgView.setImageResource(option.getImgId());
 
         viewHolder.optionTextView.setText(option.getOptionName());
         viewHolder.descriptionTextView.setText(option.getOptionDescription());

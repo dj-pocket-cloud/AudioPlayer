@@ -42,12 +42,22 @@ public class TrackArrayAdapter extends ArrayAdapter<Track> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.trackImgView.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+        viewHolder.trackImgView.setImageResource(track.getImgId());
 
         viewHolder.trackTextView.setText(track.getTrackName());
         viewHolder.artistTextView.setText(track.getArtist());
         viewHolder.lengthTextView.setText(track.getTrackLength());
 
         return convertView; // return completed list item to display
+    }
+
+    public void setImg(int position, View convertView) {
+        Track track = getItem(position);
+        //convertView MUST exist for this to work
+        if (convertView != null) {
+            ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder.trackImgView.setImageResource(track.getImgId());
+        }
+
     }
 }

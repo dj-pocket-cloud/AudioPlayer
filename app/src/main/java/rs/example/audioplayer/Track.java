@@ -1,22 +1,27 @@
 package rs.example.audioplayer;
 
+import android.support.v7.widget.RecyclerView;
+
 public class Track implements Comparable<Track>{
     private String trackName;
     private String artist;
     private String trackLength;
     private String album;
     private String path;
+    private int imgId;
+    RecyclerView.ViewHolder viewHolder;
 
     public Track(){
 
     }
 
-    public Track(String trackName, String artist, String trackLength, String album, String path) {
+    public Track(String trackName, String artist, String trackLength, String album, String path, int imgId) {
         this.trackName = trackName;
         this.artist = artist;
         this.trackLength = formatTime(trackLength);
         this.album = album;
         this.path = path;
+        this.imgId = imgId;
     }
 
     public String getAlbum() {
@@ -57,6 +62,14 @@ public class Track implements Comparable<Track>{
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public int getImgId() {
+        return imgId;
+    }
+
+    public void setImgId(int imgId) {
+        this.imgId = imgId;
     }
 
     private String formatTime(String rawTime){

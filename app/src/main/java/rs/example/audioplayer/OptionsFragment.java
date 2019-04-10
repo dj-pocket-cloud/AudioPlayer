@@ -25,6 +25,8 @@ public class OptionsFragment extends Fragment {
     private List<Option> optionList = new ArrayList<>();
     private ListView optionListView;
     private OptionArrayAdapter optionArrayAdapter;
+    private final String THEMESTRING = "Theme";
+    private final String THEMEDESCRIPTIONSTRING = "Set the display theme to use";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,7 +48,13 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //open the option here
+                //get the option then launch the corresponding method
+                Option selectedOption = (Option) parent.getItemAtPosition(position);
+                switch(selectedOption.getOptionName()) {
+                    case THEMESTRING:
+                        executeTheme();
+                        break;
+                }
 
             }
         });
@@ -72,8 +80,15 @@ public class OptionsFragment extends Fragment {
 
         //theme option
         Option theme = new Option();
-        theme.setOptionName("Theme");
-        theme.setOptionDescription("Set the display theme to use");
+        theme.setOptionName(THEMESTRING);
+        theme.setOptionDescription(THEMEDESCRIPTIONSTRING);
+        theme.setImgId(R.drawable.ic_gradient_black_24dp);
+
         optionList.add(theme);
+    }
+
+    private void executeTheme() {
+        ThemeDialogFragment td = new ThemeDialogFragment();
+        td.show(getFragmentManager(), "theme dialog");
     }
 }
