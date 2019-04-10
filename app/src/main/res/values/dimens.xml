@@ -1,4 +1,6 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="track_img_length">50dp</dimen>
+    <dimen name="track_img_length">36dp</dimen>
+    <dimen name="option_img_length">48dp</dimen>
+    <dimen name="option_gap">4dp</dimen>
 </resources>

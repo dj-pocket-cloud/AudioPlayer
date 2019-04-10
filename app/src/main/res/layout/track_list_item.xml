@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,6 +9,7 @@
         android:id="@+id/trackImgView"
         android:layout_width="@dimen/track_img_length"
         android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/default_gap"
         android:scaleType="fitCenter" />
 
     <GridLayout
@@ -25,8 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_column="0"
             android:layout_columnSpan="2"
+            android:layout_marginLeft="@dimen/default_gap"
             android:text="New Text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/artistTextView"
@@ -35,7 +39,10 @@
             android:layout_row="1"
             android:layout_column="0"
             android:layout_columnWeight="1"
-            android:text="New Text" />
+            android:layout_marginLeft="@dimen/default_gap"
+            android:layout_marginRight="@dimen/default_gap"
+            android:text="New Text"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/lengthTextView"
@@ -44,7 +51,8 @@
             android:layout_row="1"
             android:layout_column="1"
             android:layout_columnWeight="1"
-            android:text="New Text" />
+            android:text="New Text"
+            android:textSize="12sp" />
 
     </GridLayout>
 
