@@ -10,13 +10,16 @@ import java.io.IOException;
 public class TrackOperations {
 
     MediaPlayer player;
+    private boolean loaded;
 
     public TrackOperations() {
         player = new MediaPlayer();
+        loaded = false;
     }
 
     public void setSource(Context context, Uri uri) throws IOException {
         boolean loop = getLooping();
+        loaded = true;
         player.reset();
         player.setDataSource(context, uri);
         player.prepare();
@@ -28,6 +31,14 @@ public class TrackOperations {
         //play or pause the player, depending on playing status
         if (player.isPlaying()) { player.pause(); }
         else { player.start(); }
+    }
+
+    public boolean getLoaded() {
+        return this.loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
     }
 
     public boolean getPlaying() {
