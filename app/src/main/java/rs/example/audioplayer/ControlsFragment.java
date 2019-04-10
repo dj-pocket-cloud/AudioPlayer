@@ -100,10 +100,10 @@ public class ControlsFragment extends Fragment {
             public void run() {
 
                 if (mediaPlayer.getPlaying()) playButton.setImageResource(R.drawable.ic_pause_black_24dp);
-                else playButton.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                else playButton.setImageResource(R.drawable.ic_main_play_arrow_black_24dp);
 
-                if (mediaPlayer.getLooping()) loopButton.setImageAlpha(Color.WHITE);
-                else loopButton.setImageAlpha(Color.GRAY);
+                if (mediaPlayer.getLooping()) loopButton.setImageResource(R.drawable.ic_loop_black_24dp);
+                else loopButton.setImageResource(R.drawable.ic_highlight_off_black_24dp);
 
                 if (updateTimeMarkers && mediaPlayer.getLoaded()) {
                     timeAt.setText(mediaPlayer.getLengthAsString(false, seekBar.getProgress()));
@@ -181,16 +181,18 @@ public class ControlsFragment extends Fragment {
         public void onClick(View v) {
             mediaPlayer.setLooping((++loop) % 2 == 1);
             if (mediaPlayer.getLooping()){
-                loopButton.setImageAlpha(Color.WHITE);
-                Toast message = Toast.makeText(getContext(), "Looping On", Toast.LENGTH_SHORT);
-                message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
-                message.show();
+                loopButton.setImageResource(R.drawable.ic_loop_black_24dp);
+                //because the image itself changes toast messages probably aren't necessary anymore
+
+                //Toast message = Toast.makeText(getContext(), "Looping On", Toast.LENGTH_SHORT);
+                //message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
+                //message.show();
             }
             else{
-                loopButton.setImageAlpha(Color.GRAY);
-                Toast message = Toast.makeText(getContext(), "Looping Off", Toast.LENGTH_SHORT);
-                message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
-                message.show();
+                loopButton.setImageResource(R.drawable.ic_highlight_off_black_24dp);
+                //Toast message = Toast.makeText(getContext(), "Looping Off", Toast.LENGTH_SHORT);
+                //message.setGravity(Gravity.CENTER, message.getXOffset() / 2, message.getYOffset() / 2);
+                //message.show();
             }
         }
     };
