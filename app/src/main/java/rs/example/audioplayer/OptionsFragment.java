@@ -26,7 +26,7 @@ public class OptionsFragment extends Fragment {
     private ListView optionListView;
     private OptionArrayAdapter optionArrayAdapter;
     private final String THEMESTRING = "Theme";
-    private final String THEMEDESCRIPTIONSTRING = "Set the display theme to use";
+    private final String THEMEDESCRIPTIONSTRING = "Set the display theme to use (not yet implemented)";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
