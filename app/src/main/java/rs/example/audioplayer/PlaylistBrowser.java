@@ -50,6 +50,7 @@ public class PlaylistBrowser extends Fragment {
         trackListView.setAdapter(trackArrayAdapter);
 
         playlistTitle = (TextView) view.findViewById(R.id.playlistTitle);
+        playlistTitle.setText("");
 
         controlsFragment = (ControlsFragment) getFragmentManager().findFragmentById(R.id.controls);
 
@@ -176,7 +177,7 @@ public class PlaylistBrowser extends Fragment {
                 // display the dialog
                 builder.create().show();}*/
             String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE};
-            String rationale = "To use all of this app's features, permission is needed to read and write to this devices memory";
+            String rationale = "To use all of this app's features, permission is needed to read and write to this device's memory";
 
             /*Permissions.Options options = new Permissions.Options()
                     .setRationaleDialogTitle("Info")
