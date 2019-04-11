@@ -202,7 +202,7 @@ public class ControlsFragment extends Fragment {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (fromUser) { mediaPlayer.setPosition(progress); }
-            if(musicListFilled&&progress==seekBar.getMax()&&!mediaPlayer.getLooping()) {
+            else if(musicListFilled&&progress==seekBar.getMax()&&!mediaPlayer.getLooping()) {
                 changeMusic(trackList.get((trackIndex+1)%(trackList.size())));
             }
         }
