@@ -5,14 +5,23 @@ import android.support.v7.widget.RecyclerView;
 public class Track implements Comparable<Track>{
     private String trackName;
     private String artist;
+    private int trackStart;
+    private int trackEnd;
     private String trackLength;
     private String album;
     private String path;
     private int imgId;
     RecyclerView.ViewHolder viewHolder;
 
-    public Track(){
-
+    public Track(String trackName, String artist, int trackStart, int trackEnd, String album, String path, int imgId){
+        this.trackName = trackName;
+        this.artist = artist;
+        this.album = album;
+        this.path = path;
+        this.imgId = imgId;
+        this.trackStart = trackStart;
+        this.trackEnd = trackEnd;
+        trackLength = String.valueOf(trackEnd-trackStart);
     }
 
     public Track(String trackName, String artist, String trackLength, String album, String path, int imgId) {
@@ -22,6 +31,8 @@ public class Track implements Comparable<Track>{
         this.album = album;
         this.path = path;
         this.imgId = imgId;
+        trackStart = 0;
+        trackEnd = Integer.parseInt(trackLength);
     }
 
     public String getAlbum() {

@@ -33,6 +33,11 @@ public class TrackOperations {
         else { player.start(); }
     }
 
+    public void pauseMusic() throws RemoteException {
+        //play or pause the player, depending on playing status
+        if (player.isPlaying()) { player.pause(); }
+    }
+
     public boolean getLoaded() {
         return this.loaded;
     }

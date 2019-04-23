@@ -40,12 +40,16 @@ public class ControlsFragment extends Fragment {
     private ImageButton loopButton;
     private ImageButton fastForwardButton;
     private ImageButton optionsButton;
+    private ImageButton snippetButton;
     private SeekBar seekBar;
     private TextView songInfo;
     private TextView timeAt;
     private TextView timeLeft;
     private int trackIndex;
+    private int snipBegin;
+    private int snipEnd;
     private boolean musicListFilled = false;
+    private boolean snipping;
 
     private List<Track> trackList = new ArrayList<>();
 
@@ -75,16 +79,19 @@ public class ControlsFragment extends Fragment {
         loopButton = (ImageButton)view.findViewById(R.id.loopButton);
         fastForwardButton = (ImageButton)view.findViewById(R.id.forward);
         optionsButton = (ImageButton)view.findViewById(R.id.menu);
+        snippetButton =(ImageButton)view.findViewById(R.id.snippet);
         seekBar = (SeekBar)view.findViewById(R.id.songSeek);
         songInfo = (TextView)view.findViewById(R.id.songInfo);
         timeAt = (TextView)view.findViewById(R.id.timeAt);
         timeLeft = (TextView)view.findViewById(R.id.timeLeft);
+
 
         playButton.setOnClickListener(playButtonListener);
         rewindButton.setOnClickListener(rewindButtonListener);
         loopButton.setOnClickListener(loopButtonListener);
         fastForwardButton.setOnClickListener(fastForwardButtonListener);
         optionsButton.setOnClickListener(optionsButtonListener);
+        snippetButton.setOnClickListener(snippetButtonListener);
         seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
         timeAt.setText("00:00");
         timeLeft.setText("00:00");
@@ -124,6 +131,8 @@ public class ControlsFragment extends Fragment {
         return view;
 
     }
+
+
 
     //play the currently loaded song when this button is pressed
     OnClickListener playButtonListener = new OnClickListener() {
@@ -196,6 +205,29 @@ public class ControlsFragment extends Fragment {
             }
         }
     };
+    //open options menu fragment
+    OnClickListener snippetButtonListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!snipping) {
+                if(mediaPlayer.getLoaded()) {
+                    snipping = true;
+                    snipBegin = seekBar.getProgress();
+                }
+
+            } else if(snipBegin<seekBar.getProgress()){
+                snipping = false;
+                snipEnd = seekBar.getProgress();
+                SnippetDialogFragment snippetDialogFragment = new SnippetDialogFragment();
+                snippetDialogFragment.show(getFragmentManager(),"snippet dialog");
+                try {
+                    mediaPlayer.pauseMusic();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     //set track progress when the seekBar is changed
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -232,6 +264,8 @@ public class ControlsFragment extends Fragment {
 
         songInfo.setText(track.getTrackName());
 
+        snipping = false;
+
         Toast message = Toast.makeText(getContext(), "Playing " + track.getTrackName(), Toast.LENGTH_SHORT);
         message.setGravity(Gravity.CENTER, message.getXOffset() / 2,
                 message.getYOffset() / 2);
@@ -263,4 +297,45 @@ public class ControlsFragment extends Fragment {
     public static void setOptionsOpen(boolean bool) {
         optionsOpen = bool;
     }
+
+    public int getSnipBegin() {
+        return snipBegin;
+    }
+
+    public int getSnipEnd() {
+        return snipEnd;
+    }
+
+    public void setSnipBegin(int snipBegin) {
+        this.snipBegin = snipBegin;
+    }
+
+    public void setSnipEnd(int snipEnd) {
+        this.snipEnd = snipEnd;
+    }
+    public int getTracklength(){
+        return mediaPlayer.getLength();
+    }
+
+    public void createSnippet(String title){
+        if (title.equals(""))
+            title = nextSnipName();
+
+
+
+    }
+
+    private String nextSnipName(){
+        String name = songInfo.getText() + " snippet";
+        int i = 1;
+        while (trackList.contains(name)){
+            if(i>1)
+                name = name.substring(0,name.length()-2);
+            name+=i;
+            i++;
+        }
+
+        return name;
+    }
+
 }
