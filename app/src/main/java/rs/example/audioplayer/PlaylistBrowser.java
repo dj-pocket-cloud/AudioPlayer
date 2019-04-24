@@ -24,7 +24,18 @@ import android.widget.Toast;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -38,6 +49,15 @@ public class PlaylistBrowser extends Fragment {
     private ControlsFragment controlsFragment;
     private Track previousTrack;
     private int previousPos = -1;
+    private File testPlaylist;
+    private FileOutputStream os;
+    private FileInputStream is;
+    private final String FILENAME = "testPlaylist.txt";
+    private boolean testLoad = false; //false: load all tracks //true: only load tracks from file
+    private String playlistName; // name to use when loading or saving playlist file
+    private File playlistFile;
+    PlaylistAddFragment paf;
+    Track currentItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,6 +75,16 @@ public class PlaylistBrowser extends Fragment {
         controlsFragment = (ControlsFragment) getFragmentManager().findFragmentById(R.id.controls);
 
         backButton = (ImageButton) view.findViewById(R.id.backButton);
+
+        testPlaylist = new File(getContext().getFilesDir(), FILENAME);
+        //testPlaylist.delete();
+        try {
+            getContext().openFileInput(FILENAME); //invokes exception if file does not exist
+            testLoad = true;
+        } catch(FileNotFoundException e) {
+            //testPlaylist = new File(getContext().getFilesDir(), FILENAME);
+            testLoad = false;
+        }
 
         //gets track item when clicked
         trackListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -78,6 +108,24 @@ public class PlaylistBrowser extends Fragment {
             }
         });
 
+        //adds track to a playlist when long pressed
+        trackListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                currentItem = (Track) parent.getItemAtPosition(position);
+
+                //TODO: display a fragment where the user can input a playlist name to save to
+                //todo: change filename to name of this fragment
+
+                paf = new PlaylistAddFragment();
+                paf.setPlaylistBrowserReference(PlaylistBrowser.this);
+                paf.show(getFragmentManager(), "playlist add dialog");
+
+                return true;
+            }
+        });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,6 +143,31 @@ public class PlaylistBrowser extends Fragment {
         //setTestTracks();
         return view;
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        try {
+            //playlistFile = new File(getContext().getFilesDir(), playlistName + ".txt");
+            //os = new FileOutputStream(FILENAME);
+            os = getContext().openFileOutput(playlistName + ".txt", Context.MODE_PRIVATE);
+            //OutputStreamWriter ow = new OutputStreamWriter(os);
+            //ow.append(selectedItem.toString());
+            //ow.append("\n\r");
+            //ow.close();
+            os.write(currentItem.toString().getBytes());
+            os.write("\n".getBytes());
+            os.close();
+            Toast.makeText(getContext(), currentItem.getTrackName() + " saved to playlist " + playlistName, Toast.LENGTH_SHORT);
+        } catch (Exception e) {
+            Log.e("openFileOutput", "onResume: ", e);
+        }
+    }
+
+    public void setPlaylistName(String playlistName) {
+        this.playlistName = playlistName;
     }
 
     private void setTestTracks(){
@@ -152,6 +225,118 @@ public class PlaylistBrowser extends Fragment {
 
     }
 
+    private void getTracksInPlaylist(Track[] tracks){
+        trackList.clear();
+        playlistTitle.setText("All Audio");
+
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.TITLE, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.AudioColumns.DURATION};
+        Cursor c = getContext().getContentResolver().query(uri, projection, MediaStore.Audio.Media.DATA + " like ? ", new String[]{"%%"}, null);
+
+        //go through every local track, but only add ones that match the array of tracks
+        if (c != null) {
+            while (c.moveToNext()) {
+                Track audioModel = new Track();
+                String path = c.getString(0);
+                String name = c.getString(1);
+                String album = c.getString(2);
+                String artist = c.getString(3);
+                String length = c.getString(4);
+
+                audioModel.setTrackName(name);
+                audioModel.setAlbum(album);
+                audioModel.setArtist(artist);
+                audioModel.setPath(path);
+                audioModel.setTrackLength(length);
+                audioModel.setImgId(R.drawable.ic_album_black_24dp);
+
+                System.out.println(audioModel.toString());
+
+                //loop through every track in tracks[]
+                for (int currTrack = 0; currTrack < tracks.length; currTrack++) {
+                    //System.out.println(tracks[currTrack].toString());
+                    //if audioModel == tracks[currTrack]
+                    if (audioModel.toString().equals(tracks[currTrack].toString()))
+                    {
+                        Log.e("Name :" + name, " Album :" + album);
+                        Log.e("Path :" + path, " Artist :" + artist);
+
+                        trackList.add(audioModel);
+                    }
+                }
+            }
+            c.close();
+            trackList.sort(Comparator.<Track>naturalOrder());
+            controlsFragment.setTrackList(trackList);
+        }
+
+    }
+
+    private Track[] createPlaylist(File playlistFile) {
+        StringBuilder sb = new StringBuilder();
+        int size = 0;
+        //first get amount of lines in file
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(playlistFile));
+            while (br.readLine() != null) {
+                size++;
+            }
+            br.close();
+        } catch (Exception e) {
+            Log.e("createPlaylist", "createPlaylist: ", e);
+            return null;
+        }
+        System.out.println(size);
+
+        //create a new array using this size value
+        Track[] newPlaylist = new Track[size];
+        int i = 0;
+        //actually read the file and add all track information to the array
+        try {
+            is = new FileInputStream(playlistFile);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String[] split;
+
+            String line = br.readLine();
+            System.out.println("ass " + line);
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+
+
+                split = line.split("`");
+                //System.out.println(split.length);
+                for (int j = 0; j < split.length; j++) {
+                    System.out.println(split[j]);
+                }
+
+                //create a new rawtime for the track object
+                String[] minSec = split[2].split(":");
+                int min = Integer.parseInt(minSec[0]);
+                int sec = Integer.parseInt(minSec[1]);
+                String rawtime = ((min*60000) + (sec*1000)) + "";
+
+                newPlaylist[i] = new Track();
+                newPlaylist[i].setTrackName(split[0]);
+                newPlaylist[i].setArtist(split[1]);
+                newPlaylist[i].setTrackLength(rawtime);
+                newPlaylist[i].setAlbum(split[3]);
+                newPlaylist[i].setPath(split[4]);
+                newPlaylist[i].setImgId(Integer.parseInt(split[5]));
+                System.out.println(newPlaylist[i].toString());
+                System.out.println(i);
+                i++;
+                line = br.readLine();
+            }
+            br.close();
+        } catch (Exception e) {
+            Log.e("createPlaylist", "createPlaylist: ", e);
+            return null;
+        }
+
+        return newPlaylist;
+    }
+
     private void checkPermissions(){
         if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
@@ -201,7 +386,17 @@ public class PlaylistBrowser extends Fragment {
         else {
             //check if both permissions are set and automatically get all tracks
             if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                getAllTracks();
+                //load the playlist relating to playlistName, or all tracks if it is null
+                if (playlistName == null) {
+                    getAllTracks();
+                } else {
+                    //createPlaylist(testPlaylist);
+                    Track[] playlist = createPlaylist(playlistFile);
+                    System.out.println(Arrays.toString(playlist));
+                    if (playlist != null) {
+                        getTracksInPlaylist(playlist);
+                    }
+                }
                 trackArrayAdapter.notifyDataSetChanged();
                 trackListView.smoothScrollToPosition(0);
             }

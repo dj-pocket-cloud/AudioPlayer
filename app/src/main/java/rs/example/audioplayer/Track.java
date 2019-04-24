@@ -100,6 +100,15 @@ public class Track implements Comparable<Track>{
         return result;
     }
 
+    public String toString() {
+        return trackName
+                + "`" + artist
+                + "`" + trackLength
+                + "`" + album
+                + "`" + path
+                + "`" + imgId;
+    }
+
 
     @Override
     public int compareTo(Track compTrack) {
