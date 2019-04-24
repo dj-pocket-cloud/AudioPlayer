@@ -252,7 +252,7 @@ public class ControlsFragment extends Fragment {
 
     public void changeMusic(Track track){
         try {
-            mediaPlayer.setSource(getContext(),Uri.parse(track.getPath()));
+            mediaPlayer.setSource(getContext(),Uri.parse(track.getPath()),track.getTrackStart(),track.getRawTrackLength());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -320,9 +320,10 @@ public class ControlsFragment extends Fragment {
     public void createSnippet(String title){
         if (title.equals(""))
             title = nextSnipName();
+        Track original = trackList.get(trackIndex);
 
-
-
+        Track snippet = new Track(title,original.getArtist(),snipBegin,snipEnd,original.getAlbum(),original.getPath(),R.drawable.ic_content_cut_black_24dp);
+        //add to snippet file
     }
 
     private String nextSnipName(){

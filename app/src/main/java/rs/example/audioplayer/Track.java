@@ -8,10 +8,16 @@ public class Track implements Comparable<Track>{
     private int trackStart;
     private int trackEnd;
     private String trackLength;
+    private int rawTrackLength;
     private String album;
     private String path;
     private int imgId;
     RecyclerView.ViewHolder viewHolder;
+
+    public Track()
+    {
+
+    }
 
     public Track(String trackName, String artist, int trackStart, int trackEnd, String album, String path, int imgId){
         this.trackName = trackName;
@@ -21,7 +27,9 @@ public class Track implements Comparable<Track>{
         this.imgId = imgId;
         this.trackStart = trackStart;
         this.trackEnd = trackEnd;
-        trackLength = String.valueOf(trackEnd-trackStart);
+        rawTrackLength = trackEnd-trackStart;
+        trackLength = formatTime(String.valueOf(rawTrackLength));
+
     }
 
     public Track(String trackName, String artist, String trackLength, String album, String path, int imgId) {
@@ -33,6 +41,7 @@ public class Track implements Comparable<Track>{
         this.imgId = imgId;
         trackStart = 0;
         trackEnd = Integer.parseInt(trackLength);
+
     }
 
     public String getAlbum() {
@@ -85,6 +94,7 @@ public class Track implements Comparable<Track>{
 
     private String formatTime(String rawTime){
         int ms = Integer.parseInt(rawTime);
+        rawTrackLength = ms;
         int min = ms/60000; //get amount of minutes first
         ms = ms - (min*60000); //subtract those minutes from ms
         int sec = ms/1000; //get amount of seconds from result of above operation
@@ -111,9 +121,22 @@ public class Track implements Comparable<Track>{
         return result;
     }
 
+    public int getTrackStart() {
+        return trackStart;
+    }
+
+    public int getTrackEnd() {
+        return trackEnd;
+    }
+
+    public int getRawTrackLength(){
+        return rawTrackLength;
+    }
 
     @Override
     public int compareTo(Track compTrack) {
         return this.artist.compareTo(compTrack.getArtist());
     }
+
+
 }
