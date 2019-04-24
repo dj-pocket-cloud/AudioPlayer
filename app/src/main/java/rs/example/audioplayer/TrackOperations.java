@@ -11,26 +11,37 @@ public class TrackOperations {
 
     MediaPlayer player;
     private boolean loaded;
+    private int start;
+    private int length;
 
     public TrackOperations() {
         player = new MediaPlayer();
         loaded = false;
     }
 
-    public void setSource(Context context, Uri uri) throws IOException {
+    public void setSource(Context context, Uri uri, int start, int length) throws IOException {
         boolean loop = getLooping();
+        this.start = start;
+        this.length = length;
         loaded = true;
         player.reset();
         player.setDataSource(context, uri);
         player.prepare();
         setLooping(loop);
         player.start();
+        setPosition(0);
+        System.out.println(length);
     }
 
     public void toggleMusic() throws RemoteException {
         //play or pause the player, depending on playing status
         if (player.isPlaying()) { player.pause(); }
         else { player.start(); }
+    }
+
+    public void pauseMusic() throws RemoteException {
+        //play or pause the player, depending on playing status
+        if (player.isPlaying()) { player.pause(); }
     }
 
     public boolean getLoaded() {
@@ -51,7 +62,7 @@ public class TrackOperations {
 
         //stop the music, and if it was playing then start playing again
         if (wasPlaying) { player.pause(); }
-        player.seekTo(msec);
+        player.seekTo(msec + start);
         if (wasPlaying) { player.start(); }
     }
 
@@ -69,7 +80,7 @@ public class TrackOperations {
     }
 
     public int getLength() {
-        return player.getDuration();
+        return length;
     }
 
     public String getLengthAsString(boolean getRemainingLength, int msProgress) {
@@ -77,7 +88,7 @@ public class TrackOperations {
         int ms = msProgress;
         //if first flag is set true, set ms to remaining length instead of current length
         if (getRemainingLength) {
-            ms = player.getDuration() - msProgress;
+            ms = length - msProgress;
         }
         int min = ms/60000; //get amount of minutes first
         ms = ms - (min*60000); //subtract those minutes from ms
