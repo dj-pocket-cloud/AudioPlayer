@@ -5,7 +5,10 @@ import android.support.v7.widget.RecyclerView;
 public class Track implements Comparable<Track>{
     private String trackName;
     private String artist;
+    private int trackStart;
+    private int trackEnd;
     private String trackLength;
+    private int rawTrackLength;
     private String album;
     private String path;
     private int imgId;
@@ -15,6 +18,19 @@ public class Track implements Comparable<Track>{
 
     }
 
+    public Track(String trackName, String artist, int trackStart, int trackEnd, String album, String path, int imgId){
+        this.trackName = trackName;
+        this.artist = artist;
+        this.album = album;
+        this.path = path;
+        this.imgId = imgId;
+        this.trackStart = trackStart;
+        this.trackEnd = trackEnd;
+        trackLength = String.valueOf(trackEnd-trackStart);
+        rawTrackLength = trackEnd-trackStart;
+        trackLength = formatTime(String.valueOf(rawTrackLength));
+    }
+
     public Track(String trackName, String artist, String trackLength, String album, String path, int imgId) {
         this.trackName = trackName;
         this.artist = artist;
@@ -22,6 +38,9 @@ public class Track implements Comparable<Track>{
         this.album = album;
         this.path = path;
         this.imgId = imgId;
+        trackStart = 0;
+        trackEnd = Integer.parseInt(trackLength);
+
     }
 
     public String getAlbum() {
@@ -72,8 +91,21 @@ public class Track implements Comparable<Track>{
         this.imgId = imgId;
     }
 
+    public int getTrackStart() {
+        return trackStart;
+    }
+
+    public int getTrackEnd() {
+        return trackEnd;
+    }
+
+    public int getRawTrackLength(){
+        return rawTrackLength;
+    }
+
     private String formatTime(String rawTime){
         int ms = Integer.parseInt(rawTime);
+        rawTrackLength = ms;
         int min = ms/60000; //get amount of minutes first
         ms = ms - (min*60000); //subtract those minutes from ms
         int sec = ms/1000; //get amount of seconds from result of above operation
@@ -94,9 +126,7 @@ public class Track implements Comparable<Track>{
         } else {
             secString = "99";       //result: 99
         }
-
         String result = minString + ":" + secString;
-
         return result;
     }
 
@@ -106,7 +136,10 @@ public class Track implements Comparable<Track>{
                 + "`" + trackLength
                 + "`" + album
                 + "`" + path
-                + "`" + imgId;
+                + "`" + imgId
+                + "`" + trackStart
+                + "`" + trackEnd
+                + "`" + rawTrackLength;
     }
 
 
