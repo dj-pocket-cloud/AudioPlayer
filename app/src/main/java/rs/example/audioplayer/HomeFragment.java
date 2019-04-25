@@ -28,7 +28,7 @@ public class HomeFragment extends Fragment {
     private ListView playlistListView;
     private PlaylistArrayAdapter playlistArrayAdapter;
     private File masterPlaylistFile;
-    private String masterPlaylistLocation = "data/playlists";
+    private String masterPlaylistLocation = "playlists";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
