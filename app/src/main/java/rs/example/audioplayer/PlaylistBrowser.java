@@ -262,7 +262,7 @@ public class PlaylistBrowser extends Fragment {
 
     private void getTracksInPlaylist(Track[] tracks){
         trackList.clear();
-        playlistTitle.setText(FILENAME);
+        //playlistTitle.setText(FILENAME);
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.TITLE, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.AudioColumns.DURATION};
