@@ -5,9 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 public class PlaylistAddFragment extends DialogFragment {
@@ -34,6 +32,7 @@ public class PlaylistAddFragment extends DialogFragment {
                         playlistTitle = playlistEditText.getText().toString();
                         if (!playlistTitle.isEmpty()) {
                             pb.setPlaylistName(playlistTitle);
+                            pb.writePlaylist();
                         }
                     }
                 }

@@ -58,6 +58,9 @@ public class PlaylistBrowser extends Fragment {
     private File playlistFile;
     PlaylistAddFragment paf;
     Track currentItem;
+    private File masterPlaylistFile;
+    private String masterPlaylistLocation = "playlists";
+    private FileOutputStream mos;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -145,14 +148,14 @@ public class PlaylistBrowser extends Fragment {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    public void writePlaylist() {
 
         try {
             //playlistFile = new File(getContext().getFilesDir(), playlistName + ".txt");
             //os = new FileOutputStream(FILENAME);
             os = getContext().openFileOutput(playlistName + ".txt", Context.MODE_PRIVATE);
+            mos = getContext().openFileOutput(masterPlaylistLocation + ".txt", Context.MODE_PRIVATE);
+            Toast.makeText(getContext(), currentItem.getTrackName() + " saved to playlist " + playlistName, Toast.LENGTH_SHORT).show();
             //OutputStreamWriter ow = new OutputStreamWriter(os);
             //ow.append(selectedItem.toString());
             //ow.append("\n\r");
@@ -160,7 +163,8 @@ public class PlaylistBrowser extends Fragment {
             os.write(currentItem.toString().getBytes());
             os.write("\n".getBytes());
             os.close();
-            Toast.makeText(getContext(), currentItem.getTrackName() + " saved to playlist " + playlistName, Toast.LENGTH_SHORT);
+            mos.write(playlistName.getBytes());
+            mos.close();
         } catch (Exception e) {
             Log.e("openFileOutput", "onResume: ", e);
         }
@@ -298,7 +302,7 @@ public class PlaylistBrowser extends Fragment {
             String[] split;
 
             String line = br.readLine();
-            System.out.println("ass " + line);
+            System.out.println("writePlaylist " + line);
             while (line != null) {
                 sb.append(line);
                 sb.append("\n");

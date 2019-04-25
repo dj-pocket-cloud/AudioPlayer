@@ -1,10 +1,10 @@
 package rs.example.audioplayer;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +12,22 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private Button testButton;
-    private List<Track> playlistList = new ArrayList<>();
+    private List<Playlist> playlistList = new ArrayList<>();
     private ListView playlistListView;
-    private TrackArrayAdapter playlistArrayAdapter;
+    private PlaylistArrayAdapter playlistArrayAdapter;
+    private File masterPlaylistFile;
+    private String masterPlaylistLocation = "data/playlists";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,8 +38,21 @@ public class HomeFragment extends Fragment {
         testButton = (Button) view.findViewById(R.id.testButton);
         testButton.setOnClickListener(testClickListener);
         playlistListView = (ListView) view.findViewById(R.id.playlistsListView);
-        playlistArrayAdapter = new TrackArrayAdapter(getContext(),playlistList);
+        playlistArrayAdapter = new PlaylistArrayAdapter(getContext(),playlistList);
         playlistListView.setAdapter(playlistArrayAdapter);
+
+        masterPlaylistFile = new File(getContext().getFilesDir(), masterPlaylistLocation + ".txt");
+
+        if(masterPlaylistFile.exists())
+            loadPlaylists();
+        else
+        {
+            try {
+                masterPlaylistFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         //todo: find all saved playlists and display them in a displayAdapter
         //todo: clicking a playlist will load the playlistbrowser with the filename as the argument
@@ -47,8 +66,10 @@ public class HomeFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager
                         .beginTransaction();
 
+                Playlist selectedItem = (Playlist) parent.getItemAtPosition(position);
+
                 PlaylistBrowser pb = new PlaylistBrowser();
-                pb.setPlaylistName(null /*todo: get playlist here*/);
+                pb.setPlaylistName(selectedItem.getPlaylistName());
                 fragmentTransaction.replace(R.id.fragment_container, pb).addToBackStack(null).commit();
             }
         });
@@ -81,4 +102,26 @@ public class HomeFragment extends Fragment {
             //fragmentTransaction.commit();
         }
     };
+
+    private void loadPlaylists() {
+        playlistList.clear();
+        Playlist playlist = new Playlist();
+        //playlist.setPlaylistName("heloo");
+        //playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
+
+        try {
+            FileInputStream is = new FileInputStream(masterPlaylistFile);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            String line = br.readLine();
+            while (line != null) {
+                playlist.setPlaylistName(line);
+                playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
+            }
+        } catch (Exception e) {
+            Log.e("playlists", "loadPlaylists: ", e);
+        }
+
+        playlistList.add(playlist);
+    }
 }
