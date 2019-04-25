@@ -117,6 +117,9 @@ public class HomeFragment extends Fragment {
             writer.flush();
             writer.close();
             is.close();
+            File dir = getContext().getFilesDir();
+            File file = new File(dir, selectedItem.getPlaylistName() + ".txt");
+            file.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
