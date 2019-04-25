@@ -67,7 +67,7 @@ public class TrackOperations {
     }
 
     public int getPosition() {
-        return player.getCurrentPosition(); //returns in milliseconds
+        return player.getCurrentPosition()-start; //returns in milliseconds
     }
 
     //set looping status
