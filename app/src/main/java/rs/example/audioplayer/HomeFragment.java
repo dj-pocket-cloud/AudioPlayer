@@ -112,6 +112,7 @@ public class HomeFragment extends Fragment {
             BufferedWriter writer = new BufferedWriter(new FileWriter(masterPlaylistFile, false));
             for (String line : lines) {
                 writer.write(line);
+                writer.write("\n");
             }
             writer.flush();
             writer.close();
@@ -141,7 +142,6 @@ public class HomeFragment extends Fragment {
     private void loadPlaylists() {
         playlistList.clear();
         playlistArrayAdapter.notifyDataSetChanged();
-        Playlist playlist = new Playlist();
         //playlist.setPlaylistName("heloo");
         //playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
 
@@ -151,9 +151,13 @@ public class HomeFragment extends Fragment {
 
             String line = br.readLine();
             while (line != null) {
-                playlist.setPlaylistName(line);
-                playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
-                line = br.readLine();
+                if (!line.equals("\n")) {
+                    Playlist playlist = new Playlist();
+                    playlist.setPlaylistName(line);
+                    playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
+                    line = br.readLine();
+                    playlistList.add(playlist);
+                }
             }
             br.close();
             is.close();
@@ -161,6 +165,5 @@ public class HomeFragment extends Fragment {
             Log.e("playlists", "loadPlaylists: ", e);
         }
 
-        playlistList.add(playlist);
     }
 }

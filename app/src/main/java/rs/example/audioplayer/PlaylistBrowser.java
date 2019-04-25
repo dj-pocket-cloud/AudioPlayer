@@ -147,8 +147,8 @@ public class PlaylistBrowser extends Fragment {
         try {
             //playlistFile = new File(getContext().getFilesDir(), playlistName + ".txt");
             //os = new FileOutputStream(FILENAME);
-            os = getContext().openFileOutput(playlistName + ".txt", Context.MODE_PRIVATE);
-            mos = getContext().openFileOutput(masterPlaylistLocation + ".txt", Context.MODE_PRIVATE);
+            os = getContext().openFileOutput(playlistName + ".txt", Context.MODE_APPEND);
+            mos = getContext().openFileOutput(masterPlaylistLocation + ".txt", Context.MODE_APPEND);
             Toast.makeText(getContext(), currentItem.getTrackName() + " saved to playlist " + playlistName, Toast.LENGTH_SHORT).show();
             //OutputStreamWriter ow = new OutputStreamWriter(os);
             //ow.append(selectedItem.toString());
@@ -158,6 +158,7 @@ public class PlaylistBrowser extends Fragment {
             os.write("\n".getBytes());
             os.close();
             mos.write(playlistName.getBytes());
+            mos.write("\n".getBytes());
             mos.close();
         } catch (Exception e) {
             Log.e("openFileOutput", "onResume: ", e);
