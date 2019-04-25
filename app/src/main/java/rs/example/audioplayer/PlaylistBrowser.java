@@ -22,15 +22,18 @@ import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -161,12 +164,21 @@ public class PlaylistBrowser extends Fragment {
             os.write(currentItem.toString().getBytes());
             os.write("\n".getBytes());
             os.close();
-            Scanner reader = new Scanner(masterPlaylistLocation + ".txt");
             boolean alreadyExists = false;
-            while (reader.hasNextLine()) {
-                if (reader.nextLine().equals(playlistName)) {
-                    alreadyExists = true;
+            try {
+                is = new FileInputStream(masterPlaylistLocation + ".txt");
+                Scanner reader = new Scanner(is);
+                System.out.println(playlistName);
+                while (reader.hasNextLine()) {
+                    String nextLine = reader.nextLine();
+                    System.out.println(nextLine);
+                    if (nextLine.equals(playlistName)) {
+                        alreadyExists = true;
+                    }
                 }
+                reader.close();
+            } catch (FileNotFoundException e) {
+                Log.e("aaaa", "writePlaylist: ", e);
             }
             if (!alreadyExists) {
                 mos.write(playlistName.getBytes());
