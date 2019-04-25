@@ -1,6 +1,7 @@
 package rs.example.audioplayer;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +28,11 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ControlsFragment extends Fragment {
 
@@ -50,6 +54,7 @@ public class ControlsFragment extends Fragment {
     private int snipEnd;
     private boolean musicListFilled = false;
     private boolean snipping;
+    private String masterPlaylistLocation = "playlists";
 
     private List<Track> trackList = new ArrayList<>();
 
@@ -322,8 +327,41 @@ public class ControlsFragment extends Fragment {
             title = nextSnipName();
         Track original = trackList.get(trackIndex);
 
+        FileOutputStream os;
+        FileOutputStream mos;
+        String playlistName = "snippet";
+
         Track snippet = new Track(title,original.getArtist(),snipBegin,snipEnd,original.getAlbum(),original.getPath(),R.drawable.ic_content_cut_black_24dp);
-        //add to snippet file
+
+        try {
+            //playlistFile = new File(getContext().getFilesDir(), playlistName + ".txt");
+            //os = new FileOutputStream(FILENAME);
+            os = getContext().openFileOutput(playlistName+".txt", Context.MODE_APPEND);
+            mos = getContext().openFileOutput(masterPlaylistLocation + ".txt", Context.MODE_APPEND);
+            Toast.makeText(getContext(), snippet.getTrackName() + " saved to playlist " + playlistName, Toast.LENGTH_SHORT).show();
+            //OutputStreamWriter ow = new OutputStreamWriter(os);
+            //ow.append(selectedItem.toString());
+            //ow.append("\n\r");
+            //ow.close();
+            //System.out.println(currentItem.toString());
+            os.write(snippet.toString().getBytes());
+            os.write("\n".getBytes());
+            os.close();
+            Scanner reader = new Scanner(masterPlaylistLocation + ".txt");
+            boolean alreadyExists = false;
+            while (reader.hasNextLine()) {
+                if (reader.nextLine().equals(playlistName)) {
+                    alreadyExists = true;
+                }
+            }
+            if (!alreadyExists) {
+                mos.write(playlistName.getBytes());
+                mos.write("\n".getBytes());
+            }
+            mos.close();
+        } catch (Exception e) {
+            Log.e("openFileOutput", "onResume: ", e);
+        }
     }
 
     private String nextSnipName(){
