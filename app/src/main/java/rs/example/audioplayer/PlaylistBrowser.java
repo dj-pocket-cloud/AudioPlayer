@@ -155,36 +155,43 @@ public class PlaylistBrowser extends Fragment {
             //os = new FileOutputStream(FILENAME);
             os = getContext().openFileOutput(playlistName + ".txt", Context.MODE_APPEND);
             mos = getContext().openFileOutput(masterPlaylistLocation + ".txt", Context.MODE_APPEND);
+            is = getContext().openFileInput(playlistName + ".txt");
             Toast.makeText(getContext(), currentItem.getTrackName() + " saved to playlist " + playlistName, Toast.LENGTH_SHORT).show();
             //OutputStreamWriter ow = new OutputStreamWriter(os);
             //ow.append(selectedItem.toString());
             //ow.append("\n\r");
             //ow.close();
             //System.out.println(currentItem.toString());
-            os.write(currentItem.toString().getBytes());
-            os.write("\n".getBytes());
+            Scanner trackReader = new Scanner(is);
+            boolean trackAlreadyExists = false;
+            while(trackReader.hasNextLine()) {
+                if (trackReader.nextLine().equals(currentItem.toString())) {
+                    trackAlreadyExists = true;
+                }
+            }
+            if (!trackAlreadyExists) {
+                os.write(currentItem.toString().getBytes());
+                os.write("\n".getBytes());
+            }
             os.close();
             boolean alreadyExists = false;
-            try {
-                is = new FileInputStream(masterPlaylistLocation + ".txt");
-                Scanner reader = new Scanner(is);
-                System.out.println(playlistName);
-                while (reader.hasNextLine()) {
-                    String nextLine = reader.nextLine();
-                    System.out.println(nextLine);
-                    if (nextLine.equals(playlistName)) {
-                        alreadyExists = true;
-                    }
+            is = getContext().openFileInput(masterPlaylistLocation + ".txt");
+            System.out.println(playlistName);
+            Scanner reader = new Scanner(is);
+            while (reader.hasNextLine()) {
+                String nextLine = reader.nextLine();
+                System.out.println(nextLine);
+                if (nextLine.equals(playlistName)) {
+                    alreadyExists = true;
                 }
-                reader.close();
-            } catch (FileNotFoundException e) {
-                Log.e("aaaa", "writePlaylist: ", e);
             }
+            reader.close();
             if (!alreadyExists) {
                 mos.write(playlistName.getBytes());
                 mos.write("\n".getBytes());
             }
             mos.close();
+            is.close();
         } catch (Exception e) {
             Log.e("openFileOutput", "onResume: ", e);
         }
