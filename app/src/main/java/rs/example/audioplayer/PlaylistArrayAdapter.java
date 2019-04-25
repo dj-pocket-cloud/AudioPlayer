@@ -29,9 +29,9 @@ public class PlaylistArrayAdapter extends ArrayAdapter<Playlist> {
         if (convertView == null) { //create new viewholder
             viewHolder = new PlaylistArrayAdapter.ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.option_list_item, parent, false);
-            viewHolder.playlistImgView = (ImageView) convertView.findViewById(R.id.optionImgView);
-            viewHolder.playlistTextView = (TextView) convertView.findViewById(R.id.optionTextView);
+            convertView = inflater.inflate(R.layout.playlist_list_item, parent, false);
+            viewHolder.playlistImgView = (ImageView) convertView.findViewById(R.id.playlistImgView);
+            viewHolder.playlistTextView = (TextView) convertView.findViewById(R.id.playlistTextView);
             convertView.setTag(viewHolder);
         }
         else { // reuse existing ViewHolder
