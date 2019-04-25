@@ -185,7 +185,17 @@ public class PlaylistBrowser extends Fragment {
 
 
         if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            getAllTracks();
+            if (playlistName == null) {
+                getAllTracks();
+            } else {
+                //createPlaylist(testPlaylist);
+                Track[] playlist = createPlaylist(playlistFile);
+                System.out.println(Arrays.toString(playlist));
+                if (playlist != null) {
+                    getTracksInPlaylist(playlist);
+                }
+            }
+            //trackArrayAdapter.notifyDataSetChanged();
         }
         else {
             checkPermissions();
@@ -231,7 +241,7 @@ public class PlaylistBrowser extends Fragment {
 
     private void getTracksInPlaylist(Track[] tracks){
         trackList.clear();
-        playlistTitle.setText("All Audio");
+        playlistTitle.setText(FILENAME);
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.TITLE, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST, MediaStore.Audio.AudioColumns.DURATION};
@@ -314,19 +324,22 @@ public class PlaylistBrowser extends Fragment {
                     System.out.println(split[j]);
                 }
 
-                //create a new rawtime for the track object
-                String[] minSec = split[2].split(":");
-                int min = Integer.parseInt(minSec[0]);
-                int sec = Integer.parseInt(minSec[1]);
-                String rawtime = ((min*60000) + (sec*1000)) + "";
 
-                newPlaylist[i] = new Track();
-                newPlaylist[i].setTrackName(split[0]);
-                newPlaylist[i].setArtist(split[1]);
-                newPlaylist[i].setTrackLength(rawtime);
-                newPlaylist[i].setAlbum(split[3]);
-                newPlaylist[i].setPath(split[4]);
-                newPlaylist[i].setImgId(Integer.parseInt(split[5]));
+                String title = split[0];
+                String artist = split[1];
+                String album = split[2];
+                String path = split[3];
+                int img = Integer.getInteger(split[4]);
+                int start = Integer.getInteger(split[5]);
+                int end = Integer.getInteger(split[6]);
+
+                newPlaylist[i] = new Track(title,artist,start,end,album,path,img);
+                //newPlaylist[i].setTrackName();
+                //newPlaylist[i].setArtist();
+                //newPlaylist[i].setTrackLength(rawtime);
+                //newPlaylist[i].setAlbum(split[3]);
+                //newPlaylist[i].setPath(split[4]);
+                //newPlaylist[i].setImgId(Integer.parseInt(split[5]));
                 System.out.println(newPlaylist[i].toString());
                 System.out.println(i);
                 i++;

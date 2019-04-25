@@ -133,13 +133,11 @@ public class Track implements Comparable<Track>{
     public String toString() {
         return trackName
                 + "`" + artist
-                + "`" + trackLength
                 + "`" + album
                 + "`" + path
                 + "`" + imgId
                 + "`" + trackStart
-                + "`" + trackEnd
-                + "`" + rawTrackLength;
+                + "`" + trackEnd;
     }
 
 
