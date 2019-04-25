@@ -118,6 +118,8 @@ public class PlaylistBrowser extends Fragment {
 
                 currentItem = (Track) parent.getItemAtPosition(position);
 
+                //System.out.println(currentItem.getTrackEnd());
+
                 //TODO: display a fragment where the user can input a playlist name to save to
                 //todo: change filename to name of this fragment
 
@@ -160,6 +162,7 @@ public class PlaylistBrowser extends Fragment {
             //ow.append(selectedItem.toString());
             //ow.append("\n\r");
             //ow.close();
+            //System.out.println(currentItem.toString());
             os.write(currentItem.toString().getBytes());
             os.write("\n".getBytes());
             os.close();
@@ -171,6 +174,7 @@ public class PlaylistBrowser extends Fragment {
     }
 
     public void setPlaylistName(String playlistName) {
+        //System.out.println(playlistName);
         this.playlistName = playlistName;
     }
 
@@ -270,12 +274,12 @@ public class PlaylistBrowser extends Fragment {
                 for (int currTrack = 0; currTrack < tracks.length; currTrack++) {
                     //System.out.println(tracks[currTrack].toString());
                     //if audioModel == tracks[currTrack]
-                    if (audioModel.toString().equals(tracks[currTrack].toString()))
+                    if (audioModel.getPath().equals(tracks[currTrack].getPath()))
                     {
                         Log.e("Name :" + name, " Album :" + album);
                         Log.e("Path :" + path, " Artist :" + artist);
 
-                        trackList.add(audioModel);
+                        trackList.add(tracks[currTrack]);
                     }
                 }
             }
@@ -329,9 +333,9 @@ public class PlaylistBrowser extends Fragment {
                 String artist = split[1];
                 String album = split[2];
                 String path = split[3];
-                int img = Integer.getInteger(split[4]);
-                int start = Integer.getInteger(split[5]);
-                int end = Integer.getInteger(split[6]);
+                int img = Integer.parseInt(split[4]);
+                int start = Integer.parseInt(split[5]);
+                int end = Integer.parseInt(split[6]);
 
                 newPlaylist[i] = new Track(title,artist,start,end,album,path,img);
                 //newPlaylist[i].setTrackName();
@@ -407,7 +411,10 @@ public class PlaylistBrowser extends Fragment {
                 if (playlistName == null) {
                     getAllTracks();
                 } else {
+                    playlistTitle.setText(playlistName);
+
                     //createPlaylist(testPlaylist);
+                    playlistFile = new File(getContext().getFilesDir(), playlistName + ".txt");
                     Track[] playlist = createPlaylist(playlistFile);
                     System.out.println(Arrays.toString(playlist));
                     if (playlist != null) {

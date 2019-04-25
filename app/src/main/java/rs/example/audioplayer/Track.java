@@ -15,7 +15,7 @@ public class Track implements Comparable<Track>{
     RecyclerView.ViewHolder viewHolder;
 
     public Track(){
-
+        trackStart = 0;
     }
 
     public Track(String trackName, String artist, int trackStart, int trackEnd, String album, String path, int imgId){
@@ -72,6 +72,7 @@ public class Track implements Comparable<Track>{
     }
 
     public void setTrackLength(String trackLength) {
+        trackEnd = Integer.parseInt(trackLength)+trackStart;
         this.trackLength = formatTime(trackLength);
     }
 
