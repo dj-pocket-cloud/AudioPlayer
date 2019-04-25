@@ -1,9 +1,7 @@
 package rs.example.audioplayer;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +22,12 @@ import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -188,8 +182,8 @@ public class PlaylistBrowser extends Fragment {
             if (playlistName == null) {
                 getAllTracks();
             } else {
-                //createPlaylist(testPlaylist);
-                Track[] playlist = createPlaylist(playlistFile);
+                //loadPlaylist(testPlaylist);
+                Track[] playlist = loadPlaylist(playlistFile);
                 System.out.println(Arrays.toString(playlist));
                 if (playlist != null) {
                     getTracksInPlaylist(playlist);
@@ -286,7 +280,7 @@ public class PlaylistBrowser extends Fragment {
 
     }
 
-    private Track[] createPlaylist(File playlistFile) {
+    private Track[] loadPlaylist(File playlistFile) {
         StringBuilder sb = new StringBuilder();
         int size = 0;
         //first get amount of lines in file
@@ -297,7 +291,7 @@ public class PlaylistBrowser extends Fragment {
             }
             br.close();
         } catch (Exception e) {
-            Log.e("createPlaylist", "createPlaylist: ", e);
+            Log.e("loadPlaylist", "loadPlaylist: ", e);
             return null;
         }
         System.out.println(size);
@@ -347,7 +341,7 @@ public class PlaylistBrowser extends Fragment {
             }
             br.close();
         } catch (Exception e) {
-            Log.e("createPlaylist", "createPlaylist: ", e);
+            Log.e("loadPlaylist", "loadPlaylist: ", e);
             return null;
         }
 
@@ -407,8 +401,8 @@ public class PlaylistBrowser extends Fragment {
                 if (playlistName == null) {
                     getAllTracks();
                 } else {
-                    //createPlaylist(testPlaylist);
-                    Track[] playlist = createPlaylist(playlistFile);
+                    //loadPlaylist(testPlaylist);
+                    Track[] playlist = loadPlaylist(playlistFile);
                     System.out.println(Arrays.toString(playlist));
                     if (playlist != null) {
                         getTracksInPlaylist(playlist);
