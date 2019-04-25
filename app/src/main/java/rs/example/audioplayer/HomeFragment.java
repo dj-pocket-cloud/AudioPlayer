@@ -27,7 +27,7 @@ public class HomeFragment extends Fragment {
     private ListView playlistListView;
     private PlaylistArrayAdapter playlistArrayAdapter;
     private File masterPlaylistFile;
-    private String masterPlaylistLocation = "data/playlists";
+    private String masterPlaylistLocation = "playlists";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,6 +117,7 @@ public class HomeFragment extends Fragment {
             while (line != null) {
                 playlist.setPlaylistName(line);
                 playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
+                line = br.readLine();
             }
         } catch (Exception e) {
             Log.e("playlists", "loadPlaylists: ", e);
