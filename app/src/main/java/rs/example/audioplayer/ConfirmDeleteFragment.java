@@ -11,6 +11,8 @@ import android.widget.EditText;
 public class ConfirmDeleteFragment extends DialogFragment {
 
     private HomeFragment hf;
+    private PlaylistBrowser pb;
+    private boolean inHomeFragment;
 
     @Override
     public Dialog onCreateDialog(Bundle bundle) {
@@ -25,7 +27,11 @@ public class ConfirmDeleteFragment extends DialogFragment {
         builder.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        hf.deletePlaylist();
+                        if (inHomeFragment) {
+                            hf.deletePlaylist();
+                        } else {
+                            pb.deleteTrackFromPlaylist();
+                        }
                     }
                 }
         );
@@ -44,4 +50,10 @@ public class ConfirmDeleteFragment extends DialogFragment {
     public void setHomeFragmentReference(HomeFragment hf) {
         this.hf = hf;
     }
+
+    public void setPlaylistBrowserReference(PlaylistBrowser pb) {
+        this.pb = pb;
+    }
+
+    public void setInHomeFragment(boolean inHomeFragment) {this.inHomeFragment = inHomeFragment; }
 }

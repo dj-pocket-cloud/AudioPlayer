@@ -59,6 +59,8 @@ public class PlaylistBrowser extends Fragment {
     private File masterPlaylistFile;
     private String masterPlaylistLocation = "playlists";
     private FileOutputStream mos;
+    private boolean browserType; //false = in a playlist //true = in all track view
+    private ConfirmDeleteFragment cdf;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,10 +123,16 @@ public class PlaylistBrowser extends Fragment {
                 //TODO: display a fragment where the user can input a playlist name to save to
                 //todo: change filename to name of this fragment
 
-                paf = new PlaylistAddFragment();
-                paf.setPlaylistBrowserReference(PlaylistBrowser.this);
-                paf.show(getFragmentManager(), "playlist add dialog");
-
+                if (browserType) {
+                    paf = new PlaylistAddFragment();
+                    paf.setPlaylistBrowserReference(PlaylistBrowser.this);
+                    paf.show(getFragmentManager(), "playlist add dialog");
+                } else {
+                    cdf = new ConfirmDeleteFragment();
+                    cdf.setInHomeFragment(false);
+                    cdf.setPlaylistBrowserReference(PlaylistBrowser.this);
+                    cdf.show(getFragmentManager(), "track delete dialog");
+                }
                 return true;
             }
         });
@@ -197,9 +205,40 @@ public class PlaylistBrowser extends Fragment {
         }
     }
 
+    public void deleteTrackFromPlaylist() {
+        try {
+            is = getContext().openFileInput(playlistName + ".txt");
+            //temporarily write all lines to a list then rewrite them to file
+            List<String> lines = new LinkedList<>();
+            Scanner reader = new Scanner(is);
+            while (reader.hasNextLine()) {
+                lines.add(reader.nextLine());
+            }
+            reader.close();
+            File dir = getContext().getFilesDir();
+            File file = new File(dir, playlistName + ".txt");
+            file.delete();
+            lines.removeIf(n -> (n.equals(currentItem.toString())));
+            os = getContext().openFileOutput(playlistName + ".txt", Context.MODE_APPEND);
+            for (String line : lines) {
+                os.write(line.getBytes());
+                os.write("\n".getBytes());
+            }
+            os.close();
+            is.close();
+            checkPermissions();
+        } catch (Exception e) {
+            Log.e("ddd", "deleteTrackFromPlaylist: ", e);
+        }
+    }
+
     public void setPlaylistName(String playlistName) {
         //System.out.println(playlistName);
         this.playlistName = playlistName;
+    }
+
+    public void setBrowserType(boolean type) {
+        this.browserType = type;
     }
 
     private void setTestTracks(){
@@ -383,6 +422,8 @@ public class PlaylistBrowser extends Fragment {
     }
 
     private void checkPermissions(){
+        trackList.clear();
+        trackArrayAdapter.notifyDataSetChanged();
         if (getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             /*/ shows an explanation for why permission is needed

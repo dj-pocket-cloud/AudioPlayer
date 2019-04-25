@@ -76,6 +76,7 @@ public class HomeFragment extends Fragment {
 
                 PlaylistBrowser pb = new PlaylistBrowser();
                 pb.setPlaylistName(selectedItem.getPlaylistName());
+                pb.setBrowserType(false);
                 fragmentTransaction.replace(R.id.fragment_container, pb).addToBackStack(null).commit();
             }
         });
@@ -88,6 +89,7 @@ public class HomeFragment extends Fragment {
 
                 ConfirmDeleteFragment cdf = new ConfirmDeleteFragment();
                 cdf.setHomeFragmentReference(HomeFragment.this);
+                cdf.setInHomeFragment(true);
                 cdf.show(getFragmentManager(), "confirm delete dialog");
                 return true;
             }
@@ -135,6 +137,7 @@ public class HomeFragment extends Fragment {
 
             PlaylistBrowser pb = new PlaylistBrowser();
             pb.setPlaylistName(null);
+            pb.setBrowserType(true);
             fragmentTransaction.replace(R.id.fragment_container, pb).addToBackStack(null).commit();
 
             //fragmentTransaction.addToBackStack(null);
