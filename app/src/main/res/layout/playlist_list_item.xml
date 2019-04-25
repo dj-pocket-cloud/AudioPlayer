@@ -7,30 +7,18 @@
 
     <ImageView
         android:id="@+id/playlistImgView"
-        android:layout_width="@dimen/track_img_length"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/option_img_length"
+        android:layout_height="@dimen/option_img_length"
         android:layout_marginLeft="@dimen/default_gap"
         android:scaleType="fitCenter" />
 
-    <GridLayout
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/playlistTextView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:columnCount="2"
-        android:orientation="vertical"
-        android:rowCount="2"
-        android:useDefaultMargins="true">
-
-        <TextView
-            android:id="@+id/playlistTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_column="0"
-            android:layout_columnSpan="2"
-            android:layout_marginLeft="@dimen/default_gap"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="14sp" />
-
-    </GridLayout>
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/default_gap"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="14sp" />
 
 </LinearLayout>
