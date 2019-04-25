@@ -15,6 +15,7 @@ import android.widget.ListView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -78,8 +79,23 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
+                FileInputStream is;
+                Playlist selectedItem = (Playlist) parent.getItemAtPosition(position);
+                try {
+                    is = new FileInputStream(masterPlaylistFile);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                    String line = br.readLine();
+                    while(line != null) {
+                        if (line.equals(selectedItem.getPlaylistName())) {
 
-                return false;
+                        }
+                        line = br.readLine();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return true;
             }
         });
 
@@ -117,6 +133,7 @@ public class HomeFragment extends Fragment {
             while (line != null) {
                 playlist.setPlaylistName(line);
                 playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
+                line = br.readLine();
             }
         } catch (Exception e) {
             Log.e("playlists", "loadPlaylists: ", e);
