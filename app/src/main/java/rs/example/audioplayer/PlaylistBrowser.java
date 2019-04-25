@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 public class PlaylistBrowser extends Fragment {
     private List<Track> trackList = new ArrayList<>();
@@ -160,8 +161,17 @@ public class PlaylistBrowser extends Fragment {
             os.write(currentItem.toString().getBytes());
             os.write("\n".getBytes());
             os.close();
-            mos.write(playlistName.getBytes());
-            mos.write("\n".getBytes());
+            Scanner reader = new Scanner(masterPlaylistLocation + ".txt");
+            boolean alreadyExists = false;
+            while (reader.hasNextLine()) {
+                if (reader.nextLine().equals(playlistName)) {
+                    alreadyExists = true;
+                }
+            }
+            if (!alreadyExists) {
+                mos.write(playlistName.getBytes());
+                mos.write("\n".getBytes());
+            }
             mos.close();
         } catch (Exception e) {
             Log.e("openFileOutput", "onResume: ", e);
