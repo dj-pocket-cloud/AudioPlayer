@@ -13,12 +13,17 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 public class HomeFragment extends Fragment {
 
@@ -28,6 +33,7 @@ public class HomeFragment extends Fragment {
     private PlaylistArrayAdapter playlistArrayAdapter;
     private File masterPlaylistFile;
     private String masterPlaylistLocation = "playlists";
+    private Playlist selectedItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +72,7 @@ public class HomeFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager
                         .beginTransaction();
 
-                Playlist selectedItem = (Playlist) parent.getItemAtPosition(position);
+                selectedItem = (Playlist) parent.getItemAtPosition(position);
 
                 PlaylistBrowser pb = new PlaylistBrowser();
                 pb.setPlaylistName(selectedItem.getPlaylistName());
@@ -77,14 +83,43 @@ public class HomeFragment extends Fragment {
         playlistListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //delete playlist
+                selectedItem = (Playlist) parent.getItemAtPosition(position);
 
-
-                return false;
+                ConfirmDeleteFragment cdf = new ConfirmDeleteFragment();
+                cdf.setHomeFragmentReference(HomeFragment.this);
+                cdf.show(getFragmentManager(), "confirm delete dialog");
+                return true;
             }
         });
 
         return view;
 
+    }
+
+    public void deletePlaylist() {
+        FileInputStream is;
+        try {
+            is = new FileInputStream(masterPlaylistFile);
+            //temporarily write all lines to a list then rewrite them to file
+            List<String> lines = new LinkedList<>();
+            Scanner reader = new Scanner(is);
+            while (reader.hasNextLine()) {
+                lines.add(reader.nextLine());
+            }
+            reader.close();
+            lines.removeIf(n -> (n.equals(selectedItem.getPlaylistName())));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(masterPlaylistFile, false));
+            for (String line : lines) {
+                writer.write(line);
+            }
+            writer.flush();
+            writer.close();
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        loadPlaylists();
     }
 
     View.OnClickListener testClickListener = new View.OnClickListener() {
@@ -105,6 +140,7 @@ public class HomeFragment extends Fragment {
 
     private void loadPlaylists() {
         playlistList.clear();
+        playlistArrayAdapter.notifyDataSetChanged();
         Playlist playlist = new Playlist();
         //playlist.setPlaylistName("heloo");
         //playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
@@ -119,6 +155,8 @@ public class HomeFragment extends Fragment {
                 playlist.setImgId(R.drawable.ic_featured_play_list_black_24dp);
                 line = br.readLine();
             }
+            br.close();
+            is.close();
         } catch (Exception e) {
             Log.e("playlists", "loadPlaylists: ", e);
         }
